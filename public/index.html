@@ -3,6 +3,455 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0E2C5E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <title>Primesant Rutas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a1628;
+      --card: #0E2C5E;
+      --accent: #D89322;
+      --accent2: #1F4E98;
+      --text: #eee;
+      --muted: #99aabb;
+      --green: #4ade80;
+      --orange: #D89322;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0E2C5E, #1F4E98);
+      padding: 24px 20px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+    .container { padding: 16px; max-width: 500px; margin: 0 auto; }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent); color: #0a1628; font-weight: 700; }
+    .btn-primary:disabled { background: #555; cursor: not-allowed; }
+    .btn-maps {
+      background: #1F4E98;
+      color: white;
+      margin-top: 12px;
+      text-decoration: none;
+    }
+    .btn-whatsapp {
+      background: #25d366;
+      color: white;
+      margin-top: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #333;
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .day-section {
+      margin-top: 20px;
+    }
+    .day-header {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent);
+    }
+    .day-header h2 { font-size: 18px; margin-bottom: 4px; }
+    .day-header .zip-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .day-header .ring-badge {
+      display: inline-block;
+      background: var(--accent2);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin-left: 4px;
+    }
+
+    .stop-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .stop-number {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: var(--accent);
+      color: white;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .stop-address {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      padding-right: 36px;
+    }
+    .stop-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .stop-detail { display: flex; align-items: center; gap: 6px; }
+    .stop-detail .icon { font-size: 15px; }
+    .stop-agent {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #2a2a3e;
+      font-size: 13px;
+    }
+    .stop-agent div { margin-bottom: 3px; }
+
+    .summary {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .summary .total { font-size: 28px; font-weight: 700; color: var(--accent); }
+
+    .error-box {
+      background: #1a1a2e;
+      border: 1px solid #D89322;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .install-banner {
+      background: var(--card);
+      border: 1px solid var(--accent2);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+    .install-banner button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .tip {
+      background: #122a4a;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ð  Primesant Rutas</h1>
+  <p>Open Houses - Miami-Dade</p>
+</div>
+
+<div class="container">
+  <!-- Install PWA banner -->
+  <div class="install-banner" id="installBanner">
+    <span>Instalar app en tu telefono</span>
+    <button onclick="installPWA()">Instalar</button>
+  </div>
+
+  <!-- Main action button -->
+  <div id="startScreen">
+    <button class="btn btn-primary" id="searchBtn" onclick="searchOpenHouses()">
+      ð Buscar Open Houses este finde
+    </button>
+    <div class="summary" style="margin-top: 16px;">
+      <p>Busca open houses under $1M en Miami-Dade, elige los mejores ZIPs por cercanÃ­a, y te arma la ruta con un toque.</p>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div id="loadingScreen" style="display:none;">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p id="loadingText">Buscando en Zillow...</p>
+      <p style="font-size:13px; color:var(--muted); margin-top:8px;">Esto tarda ~20 segundos</p>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsScreen" style="display:none;"></div>
+</div>
+
+<script>
+  // ======= PWA INSTALL =======
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBanner').style.display = 'flex';
+  });
+
+  function installPWA() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      document.getElementById('installBanner').style.display = 'none';
+      deferredPrompt = null;
+    });
+  }
+
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+
+  // ======= SEARCH LOGIC =======
+  async function searchOpenHouses() {
+    const btn = document.getElementById('searchBtn');
+    btn.disabled = true;
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('loadingScreen').style.display = 'block';
+    document.getElementById('resultsScreen').style.display = 'none';
+
+    try {
+      const resp = await fetch('/api/open-houses');
+      if (!resp.ok) throw new Error(`Error ${resp.status}`);
+      const data = await resp.json();
+      renderResults(data);
+    } catch (err) {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('resultsScreen').style.display = 'block';
+      document.getElementById('resultsScreen').innerHTML = `
+        <div class="error-box">
+          <p style="font-size:24px; margin-bottom:12px;">ð</p>
+          <p><strong>No se pudo conectar con Zillow</strong></p>
+          <p style="color:var(--muted); margin-top:8px; font-size:13px;">${err.message}</p>
+          <button class="btn btn-primary" style="margin-top:16px;" onclick="location.reload()">Reintentar</button>
+        </div>
+      `;
+    }
+  }
+
+  // ======= RENDER RESULTS =======
+  function renderResults(data) {
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('resultsScreen').style.display = 'block';
+
+    const { saturday, sunday, weekend, totalFound } = data;
+    const satDate = formatDate(weekend.saturday);
+    const sunDate = formatDate(weekend.sunday);
+    const totalStops = saturday.count + sunday.count;
+
+    let html = '';
+
+    // Summary
+    html += `
+      <div class="summary">
+        <div class="total">${totalStops} paradas</div>
+        <p>${totalFound} open houses encontradas en Miami-Dade</p>
+        <p style="color:var(--muted)">Fin de semana ${satDate} - ${sunDate}</p>
+      </div>
+    `;
+
+    // Saturday
+    if (saturday.count > 0) {
+      html += renderDay('SABADO', satDate, saturday);
+    }
+
+    // Sunday
+    if (sunday.count > 0) {
+      html += renderDay('DOMINGO', sunDate, sunday);
+    }
+
+    // Tip
+    html += `
+      <div class="tip">
+        ð¡ <strong>TIP:</strong> Ofrece inspeccion Pre-Listing GRATIS como gancho para generar relacion con el Realtor.
+      </div>
+    `;
+
+    // WhatsApp share
+    html += `
+      <button class="btn btn-whatsapp" onclick="shareWhatsApp()">
+        ð± Compartir por WhatsApp
+      </button>
+    `;
+
+    // Search again
+    html += `
+      <button class="btn btn-primary" style="margin-top:8px;" onclick="location.reload()">
+        ð Buscar de nuevo
+      </button>
+    `;
+
+    document.getElementById('resultsScreen').innerHTML = html;
+
+    // Store data for WhatsApp share
+    window.__lastData = data;
+  }
+
+  function renderDay(dayName, dateStr, dayData) {
+    let html = `<div class="day-section">`;
+    html += `
+      <div class="day-header">
+        <h2>ð ${dayName} ${dateStr}</h2>
+        <span class="zip-badge">ZIP ${dayData.zip}</span>
+        <span class="ring-badge">Anillo ${dayData.ring}</span>
+      </div>
+    `;
+
+    // Google Maps button
+    if (dayData.mapsUrl) {
+      html += `<a href="${dayData.mapsUrl}" target="_blank" rel="noopener" class="btn btn-maps">
+        ðºï¸ Abrir ruta en Google Maps
+      </a>`;
+    }
+
+    // Stop cards
+    dayData.stops.forEach((stop, i) => {
+      html += `
+        <div class="stop-card" style="margin-top:12px;">
+          <div class="stop-number">${i + 1}</div>
+          <div class="stop-address">ð¡ ${stop.address}</div>
+          <div class="stop-details">
+            <div class="stop-detail"><span class="icon">ð°</span> $${Number(stop.price).toLocaleString()}</div>
+            <div class="stop-detail"><span class="icon">ðï¸</span> ${stop.beds}bd/${stop.baths}ba</div>
+            <div class="stop-detail"><span class="icon">ð</span> ${stop.ohTimeStart} - ${stop.ohTimeEnd}</div>
+            <div class="stop-detail"><span class="icon">ð</span> ${stop.distMiles} mi</div>
+          </div>
+          <div class="stop-agent">
+            ${stop.agentName ? `<div>ð¤ <strong>${stop.agentName}</strong></div>` : ''}
+            ${stop.brokerName ? `<div>ð¢ ${stop.brokerName}</div>` : ''}
+            ${stop.agentPhone ? `<div>ð <a href="tel:${stop.agentPhone}" style="color:var(--accent);text-decoration:none;">${stop.agentPhone}</a></div>` : ''}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  // ======= UTILITIES =======
+  function formatDate(dateStr) {
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const [y, m, d] = dateStr.split('-');
+    return `${parseInt(d)} ${months[parseInt(m)-1]}`;
+  }
+
+  function shareWhatsApp() {
+    const data = window.__lastData;
+    if (!data) return;
+
+    let text = `ð  *PRIMESANT - OPEN HOUSES*\n`;
+    text += `ð *Fin de semana ${formatDate(data.weekend.saturday)} - ${formatDate(data.weekend.sunday)}*\n\n`;
+
+    [
+      { label: 'SABADO', day: data.saturday, date: data.weekend.saturday },
+      { label: 'DOMINGO', day: data.sunday, date: data.weekend.sunday }
+    ].forEach(({ label, day, date }) => {
+      if (!day.count) return;
+      text += `ð *${label} ${formatDate(date)}*\n`;
+      text += `ð ZIP ${day.zip} (Anillo ${day.ring})\n\n`;
+
+      day.stops.forEach((s, i) => {
+        text += `*Parada ${i+1}:*\n`;
+        text += `ð¡ ${s.address}\n`;
+        text += `ð° $${Number(s.price).toLocaleString()} | ðï¸ ${s.beds}bd/${s.baths}ba\n`;
+        text += `ð ${s.ohTimeStart} - ${s.ohTimeEnd}\n`;
+        if (s.agentName) text += `ð¤ ${s.agentName}\n`;
+        if (s.brokerName) text += `ð¢ ${s.brokerName}\n`;
+        if (s.agentPhone) text += `ð ${s.agentPhone}\n`;
+        text += `ð ${s.distMiles} mi desde base\n\n`;
+      });
+
+      if (day.mapsUrl) {
+        text += `ðºï¸ Ruta Maps: ${day.mapsUrl}\n\n`;
+      }
+    });
+
+    text += `ð *Primesant Home Inspections*`;
+
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  }
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#e94560">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
